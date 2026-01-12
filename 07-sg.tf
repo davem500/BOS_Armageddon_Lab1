@@ -70,3 +70,54 @@ resource "aws_vpc_security_group_egress_rule" "rds_all_traffic_ipv4" {
   description       = "Allow all outbound traffic"
 }
 
+
+############################################
+# Security Group for VPC Interface Endpoints
+############################################
+
+# Explanation: Even endpoints need guards—bos posts a Wookiee at every airlock.
+resource "aws_security_group" "bos_vpce_sg01" {
+  name        = "${local.bos_prefix}-vpce-sg01"
+  description = "SG for VPC Interface Endpoints"
+  vpc_id      = aws_vpc.bos_vpc01.id
+
+  # TODO: Students must allow inbound 443 FROM the EC2 SG (or VPC CIDR) to endpoints.
+  # NOTE: Interface endpoints ENIs receive traffic on 443.
+
+  tags = {
+    Name = "${local.bos_prefix}-vpce-sg01"
+  }
+}
+
+
+
+############################################
+# Security Group: ALB
+############################################
+
+# Explanation: The ALB SG is the blast shield — only allow what the Rebellion needs (80/443).
+resource "aws_security_group" "bos_alb_sg01" {
+  name        = "${var.project_name}-alb-sg01"
+  description = "ALB security group"
+  vpc_id      = aws_vpc.bos_vpc01.id
+
+  # TODO: students add inbound 80/443 from 0.0.0.0/0
+  # TODO: students set outbound to target group port (usually 80) to private targets
+
+  tags = {
+    Name = "${var.project_name}-alb-sg01"
+  }
+}
+
+# Explanation: bos only opens the hangar door — allow ALB -> EC2 on app port (e.g., 80).
+resource "aws_security_group_rule" "bos_ec2_ingress_from_alb01" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.bos_ec2_sg01.id
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.bos_alb_sg01.id
+
+  # TODO: students ensure EC2 app listens on this port (or change to 8080, etc.)
+}
+
