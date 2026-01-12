@@ -19,6 +19,7 @@
 - Jay Mallard
 
 -----
+
 ### In today's meeting:
 - created and instructed everyone to create a Terraform repo in Github to share notes and test the Terraform builds
 - went through Lab 1a discussed, seperated Larry's main.tf into portions. We tested trouble shot, spun up the code. Dennis will upload to github and after Larry looks through it, will make it available for everyone to download
@@ -26,6 +27,7 @@
 - Here is the 1st draft diagram. We want to hear if you guys have any feedback or suggestions for this as well.
 
 -------
+
 ### Project Infrastructure
 VPC name  == bos_vpc01  
 Region = US East 1   
@@ -40,6 +42,7 @@ Availability Zone
 |Private|10.26.101.0/24| 10.26.102.0/24|
 
 -------
+
 ### .tf file changes 
 - Security Groups for RDS & EC2
 
@@ -52,12 +55,15 @@ Availability Zone
 *** reminder change SSH rule!!!
 
 -------------
+
 # meeting #2 - my-armageddon-project-1
 ### Group Leader: Omar Fleming
 ### Team Leader: Larry Harris
 ### Date: 01-05-25 (Monday)
 ### Time: 5pm - 8pm est.
+
 ----
+
 ### Members present: 
 - Larry Harris
 - Dennis Shaw
@@ -65,7 +71,8 @@ Availability Zone
 - David McKenzie
 - Ted Clayton
 - LT (Logan T)
-______
+
+-----
 
 ### In today's meeting
 
@@ -73,12 +80,13 @@ ______
 - make sure everyone has their github setup
 
 ----
+
 ### Fixes
 - #### ERROR notice!!!
     - note - recursive error when you re-upload this build you will get an error:
     - "You can't create this secret because a secret with this name is already scheduled for deletion." AWS keeps the secret by default for 30 days after you destroy. Therefore run this code to delete now after each terraform destroy
 
->>aws secretsmanager delete-secret --secret-id bos/rds/mysql --force-delete-without-recovery
+>>>aws secretsmanager delete-secret --secret-id bos/rds/mysql --force-delete-without-recovery
 
 - #### changes from week 1 files:
   - variables.tf - line 40 verify the correct AMI #
@@ -89,6 +97,7 @@ ______
   - JSON file - replace the AWS account with your personal 12 digit AWS account#
 
 ---------
+
 ### Deliverables
 - go through the [expected lab 1a deliverables](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1a_explanation.md). Starting at #4 on the 1a_explanation.md in Theo's armageddon.
 
@@ -127,7 +136,7 @@ screen capture (sc)<sup>1</sup>![first draft diagram](./screen-captures/lab1a-di
 
 -----
 
-A. Infrastructure Proof
+### A. Infrastructure Proof
   1) EC2 instance running and reachable over HTTP
    
 sc<sup>0</sup>![RDS-SG-inbound](./screen-captures/0.png)
@@ -147,6 +156,8 @@ sc<sup>00</sup>![IAM role attached](./screen-captures/00.png)
 Screenshot of: RDS SG inbound rule using source = sg-ec2-lab EC2 role attached 
 
 sc<sup>1</sup>![RDS-SG-inbound](./screen-captures/1.png)
+
+------------
 
 ### B. Application Proof
   1. Successful database initialization
@@ -181,6 +192,7 @@ sc<sup>5</sup>![5 - add?note=2nd_note](./screen-captures/5-note-2.png)
 sc<sup>6</sup>![6 - add?note=3rd_note](./screen-captures/6-note-3.png)
 
 -----
+
 ### C. Verification Evidence
 - CLI output proving connectivity and configuration
 - Browser output showing database data
@@ -204,6 +216,7 @@ sc<sup>9</sup>![9 - connect to CLI 2](./screen-captures/9.png)
 
 
 ------
+
 ## 6. Technical Verification 
 
 ### 6.1 Verify EC2 Instance
@@ -217,6 +230,7 @@ run this code in terminal
 
 sc<sup>17</sup>![EC2 id & state running](./screen-captures/17.png)
 
+-------
 
 ### 6.2 Verify IAM Role Attached to EC2
 >>>aws ec2 describe-instances \
@@ -228,6 +242,7 @@ sc<sup>17</sup>![EC2 id & state running](./screen-captures/17.png)
 
 sc<sup>18</sup>![ARN of an IAM](./screen-captures/18.png)
 
+----------
 
 ### 6.3 Verify RDS Instance State
 >>>aws rds describe-db-instances \
@@ -238,6 +253,8 @@ sc<sup>18</sup>![ARN of an IAM](./screen-captures/18.png)
   Available
 
 sc<sup>19</sup>![Available](./screen-captures/19.png)
+
+----------
 
 ### 6.4 Verify RDS Endpoint (Connectivity Target)
 >>>aws rds describe-db-instances \
@@ -251,6 +268,7 @@ sc<sup>19</sup>![Available](./screen-captures/19.png)
 sc<sup>20</sup>![Endpoint address and port 3306](./screen-captures/20.png)
 
 ----   
+
 ### 6.5 (works)
 
 >>>aws ec2 describe-security-groups --filters "Name=tag:Name,Values=bos-rds-sg01" --query "SecurityGroups[].IpPermissions"
@@ -262,11 +280,11 @@ sc<sup>20</sup>![Endpoint address and port 3306](./screen-captures/20.png)
 sc<sup>21</sup>![TCP Port and EC2 security group ID](./screen-captures/21.png)
 
 ----  
+
 ### 6.6 (run command inside ec2 sessions manager) (works)
 SSH into EC2 and run:
 
 >>>aws secretsmanager get-secret-value --secret-id bos/rds/mysql
-expected result
                 
                 
 #### Expected: 
@@ -312,12 +330,15 @@ Expected:
   - It centrally stores, encrypts, and manages secrets with automatic rotation and fine-grained access controls, eliminating hardcoded credentials in code/user-data, which significantly reduces the risk of exposure and simplifies lifecycle management. 
 
 -------------
+
 # meeting #3 - my-armageddon-project-1
 ### Group Leader: Omar Fleming
 ### Team Leader: Larry Harris
 ### Date: 01-06-25 (Tuesday)
 ### Time: 8:00pm -  11:15pm est.
+
 ---------
+
 ### Members present: 
 - Larry Harris
 - Dennis Shaw
@@ -329,6 +350,7 @@ Expected:
 - Torray
 - Tre Bradshaw
 - Ted Clayton
+
 -------------
 
 
@@ -342,7 +364,9 @@ ec2.tf
 
 - line 19 create an IAM policy referencing the json from our folder
 - comment out line 26-29 in ec2.tf
+  
 ----
+
 add:
 resource "aws_iam_role_policy" "bos_ec2_secrets_access" {
   name = "secrets-manager-bos-rds"
@@ -355,9 +379,13 @@ resource "aws_iam_role_policy" "bos_ec2_secrets_access" {
 
 - make sure everyone is caught up
 - go over all deliverables so that everyone can take screenshots
+
 ----------
 
 # Lab 1a complete!
+
+----------
+----------
 
 # Lab 1b
 01-08-25 
@@ -367,32 +395,46 @@ quick meeting with Larry with some updates for Lab 1b
   
 - ### lambda_ir_reporter.zip
   - the zip will run on initializing
+  
 ----
+
 - ### lambda (folder)
   - copy and add the two files from the Lambda folder in Larry's repo
     1. claude.py
     2. handler.py
+
 ----
+
 - ### 1a_user_data.sh 
   - replaced current contents with Larry's
+
 ----
+
 - ### bedrock_autoreport.tf
+
 ----
+
 - ### cloudwatch.tf folder copy and past code from Larry
+
 ----
+
 - ### go to output.tf file
   - un Toggle Line Comment last 2 output blocks
+
 ----
+
 - ### sns_topic.tf 
   - copy from Larry's repo
+
 ----
 
 
-****** note: will start testing tomorrow, and going through familiarizng myself with the deliverables. 
-- when I see "lab" in the commands I have to change to bos_ec01
+*note: will start testing tomorrow, and going through familiarizng myself with the deliverables. 
+- when you see "lab" in the commands I have to change to bos_ec01
 
 -----
 ----
+
 Friday 01-09-25  
 5pm - 8pm  
 caught up more members
@@ -420,8 +462,9 @@ sc<sup>24-1</sup>![24](./screen-captures/24-1.png)
 
 - change_instance ID and Secret_ID and run
 - these are my personal IDs (get yours from the console or terminal)
+- *note: everytime you spin up the instance ID changes
   - instance ID: i-0d5a37100e335070c
-  - secrets ID: bos/rds/mysql\
+  - secrets ID: bos/rds/mysql
   - DB_ID: bos-rds01
 
 sc<sup>24-2</sup>![24](./screen-captures/24-2.png)
@@ -434,7 +477,7 @@ sc<sup>24-2</sup>![24](./screen-captures/24-2.png)
 
 ID Changes:
   - instance ID: i-0d5a37100e335070c
-  - secrets ID: bos/rds/mysql\
+  - secrets ID: bos/rds/mysql
   - DB_ID: bos-rds01
 
 sc<sup>24-4</sup>![24](./screen-captures/24-4.png)
@@ -443,6 +486,8 @@ sc<sup>24-4</sup>![24](./screen-captures/24-4.png)
 
 ### 2) Basic: verify RDS isn’t public + SG-to-SG rule exists
 Strict: also verify DB subnets are private (no IGW route)
+
+- *note: when pushed to github the backslashes "\" do not appear. Remember to add a space + \ at the end of each line where a new line follows
 
 >>>REGION=us-east-1 \
 INSTANCE_ID=i-0123456789abcdef0 \
@@ -473,3 +518,295 @@ Exit code: you will see these in the Python (folder) > gate_result.json
 - 1 = error (missing env/tools/scripts)
 
 sc<sup>24-6</sup>![24](./screen-captures/24-6.png)
+
+if you get this error message, copy the URL, go to github and change your 
+https://github.com/settings/emails
+
+sc<sup>24-7</sup>![24-7 email fix 1](./screen-captures/24-7-email-fix-1.png)
+
+
+sc<sup>24-8</sup>![24-8 email fix 2](./screen-captures/24-8-email-fix-2.png)
+
+--------
+
+# meeting #4 - my-armageddon-project-1
+### Group Leader: Omar Fleming
+### Team Leader: Larry Harris
+### Date: 01-10-25 (Saturday)
+### Time: 2:00pm -  3:00pm est. in class
+### Time: 3:00pm -  6:00pm est. with group
+
+---------
+
+### Members present: 
+- Larry Harris
+- Dennis Shaw
+- Kelly D Moore
+- LT (Logan T)
+- Torray
+- Zeek-Miller314
+- David McKenzie
+- Ted Clayton
+- Jasper
+- Tre Bradshaw
+- Roy Lester
+- Jasper Shivers (Jdollas)
+
+-------------
+
+#### 3 things to change in the following codes
+- ARN  
+- anywhere it says "lab" in the code replace it with "bos"
+
+------------
+
+- catch everyone up and confirm Lab 1a is complete
+- go over lab 1b notes
+
+------------
+
+PART I — Incident Scenario 
+
+#### Breaking the system
+- pull up url+ / init to see the page is working
+
+sc<sup>25</sup>![25](./screen-captures/25.png)
+
+- go to secrets manager in the consol > click secrets name > overview > click retrieve secrets value > edit > plaintext > make a change to the password (break the password)
+
+sc<sup>26</sup>![26](./screen-captures/26.png)
+
+- go back to the URL add /line to confirm it's broken
+
+sc<sup>27</sup>![27](./screen-captures/27.png)
+
+#### PART III — Monitoring & Alerting (SNS + PagerDuty Simulation)
+SNS Alert Channel SNS Topic Name: lab-db-incidents aws sns create-topic --name lab-db-incidents Email Subscription (PagerDuty Simulation)
+
+----
+
+ >>>aws sns subscribe \
+   --topic-arn <TOPIC_ARN> \
+   --protocol email \
+   --notification-endpoint your-email@example.com
+
+*remember to put " \ at the end of every line except the last
+ 
+get ARN: go to consol > SNS > Topic > copy ARN
+my personal ARN: 
+- arn:aws:sns:us-east-1:497589205696:bos-db-incidents
+
+- change email
+- confirm in your email that you have subscribed
+  
+sc<sup>28-1</sup>![28-1](./screen-captures/28-1.png)
+
+----
+
+If you are having an issue subscribing to the SNS because it automatically unsubscribes then:
+- redo the steps to get an email confirmation (DO NOT CONFIRM!) 
+- subcribe manually through the consol by going to Amazon SNS > Subscriptions select the pending confirmation and confirm subscription.
+- it will ask you to enter the subscription confirmation url
+    - go your email open, right click the confirm subscription link and copy the address/url
+    - go back to consol and past this into the "Enter the subscription conformation url" box
+    - confirm
+  
+sc<sup>28-2</sup>![28-2](./screen-captures/28-2.png)
+
+sc<sup>28-3</sup>![28-3](./screen-captures/28-3.png)
+
+----
+
+CloudWatch Alarm → SNS Alarm Concept Trigger when: DB connection errors ≥ 3 in 5 minutes Alarm Creation (example)
+
+*the original code in Theo's instructions didn't work. We found this new code and replaced it.
+
+>>>aws cloudwatch put-metric-data \
+    --namespace bos/RDSApp \
+    --metric-name DBConnectionErrors \
+    --value 5 \
+    --unit Count
+
+Expected results:
+- email alert
+
+sc<sup>29</sup>![29](./screen-captures/29.png)
+
+- *note: you can also click the link in the email to view the alarm parameters in more detail in AWS console
+
+sc<sup>30-1</sup>![30-1](./screen-captures/30-1.png)
+
+sc<sup>30-2</sup>![30-2](./screen-captures/30-2-history-data-alarm.png)
+
+sc<sup>30-3</sup>![30-3](./screen-captures/30-3-history-data-ok.png)
+
+----
+
+### RUNBOOK SECTION 2 - Observe 2.1 Check Application Logs
+
+>>>aws logs filter-log-events \
+  --log-group-name /aws/ec2/lab-rds-app \
+  --filter-pattern "ERROR"
+
+Expected: Clear DB connection failure messages
+
+sc<sup>31</sup>![31](./screen-captures/31.png)
+
+----
+
+#### 2.2 Identify Failure Type Students must classify:
+
+- Credential failure? Network failure? Database availability failure? This classification is graded.
+
+RUNBOOK SECTION 3 — Validate Configuration Sources 3.1 Retrieve Parameter Store Values
+
+>>>  aws ssm get-parameters \
+    --names /lab/db/endpoint /lab/db/port /lab/db/name \
+    --with-decryption
+
+Expected: Endpoint + port returned
+
+sc<sup>32</sup>![32](./screen-captures/32.png)
+
+----
+
+3.2 Retrieve Secrets Manager Values
+
+>>>aws secretsmanager get-secret-value \
+  --secret-id lab/rds/mysql
+
+Expected: Username/password visible Compare against known-good state
+
+sc<sup>33-1</sup>![33-1](./screen-captures/33-1.png)
+
+------
+
+RUNBOOK SECTION 4 — Containment 4.1 Prevent Further Damage Do not restart EC2 blindly Do not rotate secrets again Do not redeploy infrastructure
+
+Students must explicitly state: “System state preserved for recovery.”
+
+- basically fix the password
+
+sc<sup>33-2</sup>![33-2](./screen-captures/33-2.png)
+
+------
+
+RUNBOOK SECTION 5 — Recovery Recovery Paths (Depends on Root Cause) If Credential Drift Update RDS password to match Secrets Manager OR Update Secrets Manager to known-good value
+
+If Network Block
+- Restore EC2 security group access to RDS on 3306
+
+If DB Stopped
+- Start RDS and wait for available
+
+check url
+
+Verify Recovery 
+>>> curl http://<EC2_PUBLIC_IP>/list
+
+Expected: Application returns data No errors
+
+sc<sup>34</sup>![34](./screen-captures/34.png)
+
+sc<sup>35</sup>![35](./screen-captures/35.png)
+
+-------
+
+RUNBOOK SECTION 6 — Post-Incident Validation 6.1 Confirm Alarm Clears
+
+#### It wouldn't work - group solution
+
+Run this command first, wait 5 minutes (300) after running the code which creates a second alarm to check afer we fix it.
+
+>>>aws cloudwatch put-metric-alarm    --alarm-name bos-db-connection-success    --metric-name DBConnectionErrors    --namespace Bos/RDSApp    --statistic Sum    --period 300    --threshold 3    --comparison-operator GreaterThanOrEqualToThreshold    --evaluation-periods 1 --treat-missing-data notBreaching  --alarm-actions arn:aws:sns:us-east-1:497589205696:bos-db-incidents
+
+run this to verify OK
+
+>>>aws cloudwatch describe-alarms \
+  --alarm-names bos-db-connection-success \
+  --query "MetricAlarms[].StateValue"
+
+sc<sup>36</sup>![36](./screen-captures/36.png)
+
+Expected: OK
+
+------
+
+6.2 Confirm Logs Normalize
+
+>>>aws logs filter-log-events \
+  --log-group-name /aws/ec2/lab-rds-app \
+  --filter-pattern "ERROR"
+
+Expected: No new errors
+
+sc<sup>37</sup>![37](./screen-captures/37.png)
+
+-----
+
+
+----
+
+# meeting #5 - my-armageddon-project-1
+### Group Leader: Omar Fleming
+### Team Leader: Larry Harris
+### Date: 01-11-25 (Sunday)
+### Time: 2:00pm - 2:30pm est. in class
+### Time: 3:00pm -  pm est. with group
+
+---------
+
+### Members present: 
+- Larry Harris
+- Dennis Shaw
+- Kelly D Moore
+- LT (Logan T)
+- Roy Lester
+- Rubeen Perry
+- Ted Clayton
+- Torray
+- Tre Bradshaw
+- David McKenzie
+- Jasper Shivers (Jdollas)
+
+---------
+
+### In today's meeting:
+
+- we went through Theo's instructions for Lab 1b
+
+------------
+
+# Final requirements for Lab 1b
+
+### ALARM: "bos-db-connection-failure" in US East (N. Virginia)
+
+We received this email because Amazon CloudWatch Alarm "bos-db-connection-failure" in the US East (N. Virginia) region has entered the ALARM state; "Threshold Crossed: 1 datapoint [5.0 (11/01/26 18:01:00)] was greater than or equal to the threshold (3.0)." at "Sunday 11 January, 2026 18:06:54 UTC".
+
+### Incident Report: bos-db-connection-failure
+|Field|Description|
+|---|---|
+|Region: |US East (N. Virginia)|
+|AWS Account: | 497589205696|
+|Alarm Arn: | arn:aws:cloudwatch:us-east-1:497589205696:alarm:bos-db-connection-failure|
+|||
+|||
+|STATE CHANGE: | INSUFFICIENT_DATA -> ALARM|
+|Reason for State Change: | *The password was changed resulting in:* Threshold Crossed: datapoint [5.0 (11/01/26)] was greater than or equal to the threshold (3.0).|
+|Date/Time of Incident|Sunday 11, January, 2026 / 18:06:54 UTC: |
+|||
+|||
+|STATE CHANGE: |INSUFFICIENT_DATA -> OK|
+|Reason for State Change: |*Corrected the password.**|
+|Date/Time of Incident |Sunday 11, January, 2026 / 22:03:38 (UTC)|
+
+
+A comprehensive investigation determined that the AWS Secrets Manager password had been modified without authorization. The password has since been restored to its correct value. To prevent a recurrence we will review and refine IAM policies to ensure adherence to the principle of least privilege.
+
+The following actions are recommended:
+- Implement multi-factor authentication (MFA) to provide an additional layer of security, and enable AWS CloudTrail to capture and retain records of all API calls and user activity.
+- Reduce mean time to resolution (MTTR) by deploying Amazon CloudWatch Synthetics canaries to continuously monitor critical endpoints and APIs.
+
+----
+
+
