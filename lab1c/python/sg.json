@@ -1,0 +1,49 @@
+{
+    "SecurityGroups": [
+        {
+            "GroupId": "sg-0fe30c33688989405",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "Description": "Allow all outbound traffic",
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "bos-rds-sg01"
+                }
+            ],
+            "VpcId": "vpc-089a1c7e8d6c00194",
+            "SecurityGroupArn": "arn:aws:ec2:us-east-1:891377135193:security-group/sg-0fe30c33688989405",
+            "OwnerId": "891377135193",
+            "GroupName": "bos-rds-sg01",
+            "Description": "RDS security group",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 3306,
+                    "ToPort": 3306,
+                    "UserIdGroupPairs": [
+                        {
+                            "Description": "Allow MySQL access only from app tier EC2 instances",
+                            "UserId": "891377135193",
+                            "GroupId": "sg-000ee203d63bd7d7d"
+                        }
+                    ],
+                    "IpRanges": [],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        }
+    ]
+}
